@@ -1,4 +1,4 @@
-import { BlockElement } from './LevelCreator'
+import { BlockElement } from './BlockElement'
 
 export class AreaSelector {
   private selector: HTMLElement
@@ -7,11 +7,15 @@ export class AreaSelector {
   private endX: number | undefined
   private endY: number | undefined
   private selectables: NodeListOf<BlockElement>
+  private reverse = false
   constructor(selector: HTMLElement) {
     this.selector = selector
     document.addEventListener('mousedown', (e) => this.handleMouseDown(e))
     document.addEventListener('mouseup', () => this.handleMouseup())
+    document.addEventListener('keydown', (e) => this.handleKeyDown(e))
+    document.addEventListener('keyup', (e) => this.handleKeyUp(e))
     this.selectables = document.querySelectorAll('block-element')
+    this.selectables.forEach((s) => s.addEventListener('click', (e) => this.selectOne(e)))
   }
 
   private renderArea(): void {
@@ -25,14 +29,21 @@ export class AreaSelector {
 
     this.selector.style.width = biggerX - smallerX + 'px'
     this.selector.style.height = biggerY - smallerY + 'px'
-    Array.from(this.selectables).forEach((i) => (i.style.background = 'none'))
+    if (!this.reverse) {
+      Array.from(this.selectables).forEach((i) => {
+        i.dataset.selected = 'false'
+        i.style.background = 'none'
+      })
+    }
 
     const selected = Array.from(this.selectables).filter((el) => {
       const { x, y, width, height } = el.getBoundingClientRect()
-      const topLeftCorner = { x, y }
-      const topRightCorner = { x: x + width, y }
-      const bottomLeftCorner = { x, y: y + height }
-      const bottomRightCorner = { x: x + width, y: y + height }
+      const elapsedX = x + window.pageXOffset
+      const elapsedY = y + window.pageYOffset
+      const topLeftCorner = { x: elapsedX, y: elapsedY }
+      const topRightCorner = { x: elapsedX + width, y: elapsedY }
+      const bottomLeftCorner = { x: elapsedX, y: elapsedY + height }
+      const bottomRightCorner = { x: elapsedX + width, y: elapsedY + height }
       const corners = [topLeftCorner, topRightCorner, bottomLeftCorner, bottomRightCorner]
       return (
         corners.some(
@@ -47,24 +58,28 @@ export class AreaSelector {
         (smallerX >= x && smallerX <= x + width && smallerY >= y && smallerY <= y + height)
       )
     })
-    selected.forEach((e) => (e.style.background = 'red'))
+
+    const previouslySelected = document.querySelectorAll<BlockElement>(`[data-selected='true']`)
+    const notSelected = document.querySelectorAll<BlockElement>(`[data-selected='false']`)
+    previouslySelected.forEach((s) => (s.style.background = 'rgba(192, 192, 192, 0.6)'))
+    notSelected.forEach((s) => (s.style.background = 'none'))
+    selected.forEach((e) => e.select())
   }
 
   private handleMouseDown(e: MouseEvent): void {
-    this.startX = e.clientX
-    this.startY = e.clientY
+    this.startX = e.pageX
+    this.startY = e.pageY
     this.selector.style.top = 0 + 'px'
     this.selector.style.left = 0 + 'px'
     this.selector.style.width = 0 + 'px'
     this.selector.style.height = 0 + 'px'
     this.selector.hidden = false
     document.onmousemove = (e) => this.handleMouseMove(e)
-    // document.addEventListener('mousemove', this.handleMouseMove.bind(this))
   }
 
   private handleMouseMove(e: MouseEvent): void {
-    this.endX = e.clientX
-    this.endY = e.clientY
+    this.endX = e.pageX
+    this.endY = e.pageY
     this.renderArea()
   }
 
@@ -75,10 +90,35 @@ export class AreaSelector {
     this.endX = 0
     this.endY = 0
     document.onmousemove = null
-    // document.removeEventListener('mousemove', this.handleMouseMove.bind(this))
-    // const selected = window.getSelection()?.anchorNode as unknown
-    // if (selected instanceof BlockElement) {
-    //   selected?.test()
-    // }
+    this.selectables.forEach((s) => s.saveState())
+  }
+
+  private handleKeyDown(e: KeyboardEvent): void {
+    if (e.key === 'Control' || e.key === 'Meta') {
+      this.reverse = true
+    }
+  }
+
+  private handleKeyUp(e: KeyboardEvent): void {
+    if (e.key === 'Control' || e.key === 'Meta') {
+      this.reverse = false
+    }
+  }
+
+  private selectOne(e: MouseEvent): void {
+    const { target } = e
+    if (target instanceof BlockElement) {
+      if (!this.reverse) {
+        Array.from(this.selectables).forEach((i) => {
+          i.dataset.selected = 'false'
+          i.style.background = 'none'
+        })
+        target.select()
+        target.saveState()
+      } else {
+        target.select()
+        target.saveState()
+      }
+    }
   }
 }

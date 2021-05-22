@@ -1,27 +1,5 @@
-class RowElement extends HTMLElement {
-  constructor(_optionalClasses?: string | null) {
-    super()
-  }
-
-  removeChilds() {
-    Array.from(this.children).forEach((child) => child.remove())
-  }
-}
-
-export class BlockElement extends HTMLElement {
-  constructor() {
-    super()
-  }
-  test() {
-    const currentState = this.dataset.selected === 'true'
-    this.dataset.selected = String(!currentState)
-    if (!currentState) {
-      this.style.background = 'red'
-    } else {
-      this.style.background = 'none'
-    }
-  }
-}
+import { BlockElement } from './BlockElement'
+import { RowElement } from './RowElement'
 
 export default class LevelCreator {
   private container: HTMLElement
