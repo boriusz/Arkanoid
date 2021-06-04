@@ -16,6 +16,11 @@
     flex-direction: column;
 }
 
+body {
+    background: #1e1e1e;
+    color: white;
+}
+
 row-element {
     display: flex;
     width: auto;
@@ -26,7 +31,7 @@ block-element {
     display: inline-block;
     height: var(--block-height);
     width: var(--block-width);
-    border: 1px black solid;
+    border: 1px white solid;
 }
 
 #field-select {

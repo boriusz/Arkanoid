@@ -36,28 +36,7 @@ export class AreaSelector {
       })
     }
 
-    const selected = Array.from(this.selectables).filter((el) => {
-      const { x, y, width, height } = el.getBoundingClientRect()
-      const elapsedX = x + window.pageXOffset
-      const elapsedY = y + window.pageYOffset
-      const topLeftCorner = { x: elapsedX, y: elapsedY }
-      const topRightCorner = { x: elapsedX + width, y: elapsedY }
-      const bottomLeftCorner = { x: elapsedX, y: elapsedY + height }
-      const bottomRightCorner = { x: elapsedX + width, y: elapsedY + height }
-      const corners = [topLeftCorner, topRightCorner, bottomLeftCorner, bottomRightCorner]
-      return (
-        corners.some(
-          (corner) =>
-            corner.x >= smallerX &&
-            corner.x <= biggerX &&
-            corner.y >= smallerY &&
-            corner.y <= biggerY
-        ) ||
-        (x >= smallerX && x <= biggerX && smallerY >= y && biggerY <= y + height) ||
-        (y >= smallerY && y <= biggerY && smallerX >= x && biggerX <= x + width) ||
-        (smallerX >= x && smallerX <= x + width && smallerY >= y && smallerY <= y + height)
-      )
-    })
+    const selected = this.calculateSelectedBlocks(smallerX, smallerY, biggerX, biggerY)
 
     const previouslySelected = document.querySelectorAll<BlockElement>(`[data-selected='true']`)
     const notSelected = document.querySelectorAll<BlockElement>(`[data-selected='false']`)
@@ -120,5 +99,35 @@ export class AreaSelector {
         target.saveState()
       }
     }
+  }
+
+  private calculateSelectedBlocks(
+    smallerX: number,
+    smallerY: number,
+    biggerX: number,
+    biggerY: number
+  ) {
+    return Array.from(this.selectables).filter((el) => {
+      const { x, y, width, height } = el.getBoundingClientRect()
+      const elapsedX = x + window.pageXOffset
+      const elapsedY = y + window.pageYOffset
+      const topLeftCorner = { x: elapsedX, y: elapsedY }
+      const topRightCorner = { x: elapsedX + width, y: elapsedY }
+      const bottomLeftCorner = { x: elapsedX, y: elapsedY + height }
+      const bottomRightCorner = { x: elapsedX + width, y: elapsedY + height }
+      const corners = [topLeftCorner, topRightCorner, bottomLeftCorner, bottomRightCorner]
+      return (
+        corners.some(
+          (corner) =>
+            corner.x >= smallerX &&
+            corner.x <= biggerX &&
+            corner.y >= smallerY &&
+            corner.y <= biggerY
+        ) ||
+        (x >= smallerX && x <= biggerX && smallerY >= y && biggerY <= y + height) ||
+        (y >= smallerY && y <= biggerY && smallerX >= x && biggerX <= x + width) ||
+        (smallerX >= x && smallerX <= x + width && smallerY >= y && smallerY <= y + height)
+      )
+    })
   }
 }

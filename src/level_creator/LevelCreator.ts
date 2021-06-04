@@ -1,16 +1,21 @@
 import { BlockElement } from './BlockElement'
 import { RowElement } from './RowElement'
+import { BlocksList } from './BlocksList'
 
 export default class LevelCreator {
-  private container: HTMLElement
+  private readonly container: HTMLElement
   private blockFieldArray: number[][]
   private readonly height: number = 28
   private readonly width: number = 14
+  private blocks: BlocksList
   constructor(container: HTMLElement) {
     window.customElements.define('row-element', RowElement)
     window.customElements.define('block-element', BlockElement)
+
     this.container = container
     this.blockFieldArray = this.initArray()
+
+    this.blocks = new BlocksList(this.container)
     this.render()
   }
 
