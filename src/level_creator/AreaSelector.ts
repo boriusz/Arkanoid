@@ -10,10 +10,11 @@ export class AreaSelector {
   private reverse = false
   constructor(selector: HTMLElement) {
     this.selector = selector
-    document.addEventListener('mousedown', (e) => this.handleMouseDown(e))
+    // const main = document.querySelector('#main')!
+    document.addEventListener('mousedown', (e) => this.handleMouseDown(e as MouseEvent))
     document.addEventListener('mouseup', () => this.handleMouseup())
-    document.addEventListener('keydown', (e) => this.handleKeyDown(e))
-    document.addEventListener('keyup', (e) => this.handleKeyUp(e))
+    document.addEventListener('keydown', (e) => this.handleKeyDown(e as KeyboardEvent))
+    document.addEventListener('keyup', (e) => this.handleKeyUp(e as KeyboardEvent))
     this.selectables = document.querySelectorAll('block-element')
     this.selectables.forEach((s) => s.addEventListener('click', (e) => this.selectOne(e)))
   }
@@ -46,6 +47,7 @@ export class AreaSelector {
   }
 
   private handleMouseDown(e: MouseEvent): void {
+    if ((e.target as HTMLElement).className === 'bound') return
     this.startX = e.pageX
     this.startY = e.pageY
     this.selector.style.top = 0 + 'px'
