@@ -70,6 +70,7 @@ export class Controls {
     const result = []
     if (e.key === 'Delete' && !this.pressedKeys.Delete) {
       result.push(...this.handleDelete())
+      return result
     } else {
       result.push([])
     }
@@ -80,15 +81,28 @@ export class Controls {
         this.pressedKeys.s = true
         this.handleSave()
       }
+      return result
     }
 
     if (e.key === 'l' && (e.ctrlKey || e.metaKey)) {
       e.preventDefault()
       if (!this.pressedKeys.l) {
         this.pressedKeys.l = true
-        this.handleRead()
+        this.handleRead().then()
       }
+      return result
     }
+
+    if (e.key === 'z' && (e.ctrlKey || e.metaKey)) {
+      this.handleUndo()
+      return result
+    }
+
+    if (e.key === 'y' && (e.ctrlKey || e.metaKey)) {
+      this.handleRedo()
+      return result
+    }
+
     return result
   }
 
@@ -96,6 +110,14 @@ export class Controls {
     const { key } = e
     if (key === 'Delete' || key === 's' || key === 'l' || key === 'z' || key === 'y')
       this.pressedKeys[key] = false
+  }
+
+  handleUndo(): void {
+    this.creator.undo()
+  }
+
+  handleRedo(): void {
+    this.creator.redo()
   }
 
   handleDelete(): Array<{ x: number; y: number }>[] {

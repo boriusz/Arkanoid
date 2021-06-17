@@ -11,6 +11,8 @@ export default class LevelCreator {
   private readonly width: number = 14
   private blocks: BlocksList
   private data: ResultInterface[]
+  private states: ResultInterface[][]
+  private currentState: number
   private controls: Controls
   private contextMenu: ContextMenu
   private boardRepresentation: HTMLCanvasElement
@@ -26,6 +28,8 @@ export default class LevelCreator {
     this.blockFieldArray = this.initArray()
 
     this.data = []
+    this.states = [[]]
+    this.currentState = 0
 
     this.controls = new Controls(this)
     this.contextMenu = new ContextMenu(this.controls, this)
@@ -41,6 +45,7 @@ export default class LevelCreator {
       if (e.key === 'Delete') {
         const [toDelete] = this.controls.handleKeyDown(e)
         toDelete.forEach(({ x, y }: { x: number; y: number }) => this.removeExisting(x, y))
+        this.setData(this.getData()) // Set state after deletion
       } else {
         this.controls.handleKeyDown(e)
       }
@@ -79,16 +84,46 @@ export default class LevelCreator {
   }
 
   addItemsToData(elements: ResultInterface[]): void {
+    if (this.states.length > this.currentState + 1) {
+      this.states.splice(this.currentState + 1)
+    }
+    console.log(this.states)
     this.data.push(...elements)
+    this.states.push(JSON.parse(JSON.stringify(this.data)))
+    console.log(this.states)
+    this.currentState++
+    this.renderRepresentation()
   }
 
   setData(elements: ResultInterface[]): void {
+    if (this.states.length > this.currentState + 1) {
+      this.states.splice(this.currentState + 1)
+    }
     this.data = elements
+    this.states.push(JSON.parse(JSON.stringify(this.data)))
+    console.log(this.states)
+    this.currentState++
     this.renderRepresentation()
   }
 
   getData(): ResultInterface[] {
     return this.data
+  }
+
+  undo(): void {
+    if (this.currentState >= 0 && this.currentState - 1 >= 0) {
+      this.currentState--
+      this.data = JSON.parse(JSON.stringify(this.states[this.currentState]))
+      this.renderRepresentation()
+    }
+  }
+  redo(): void {
+    if (this.currentState >= 0 && this.currentState + 1 < this.states.length) {
+      this.currentState++
+      this.data = JSON.parse(JSON.stringify(this.states[this.currentState]))
+      console.log(this.states, this.currentState)
+      this.renderRepresentation()
+    }
   }
 
   handleElementPick(e: MouseEvent): void {

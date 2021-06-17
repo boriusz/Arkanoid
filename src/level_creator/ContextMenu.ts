@@ -22,6 +22,7 @@ export class ContextMenu {
         this.creator.removeExisting(x, y)
       })
       this.controls.pressedKeys.Delete = false
+      this.creator.setData(this.creator.getData()) // Save state after deletion
       this.creator.renderRepresentation()
     })
     this.saveToFile = document.querySelector('#save')!
@@ -35,6 +36,12 @@ export class ContextMenu {
     })
 
     this.undo = document.querySelector('#undo')!
+    this.undo.addEventListener('click', () => {
+      this.controls.handleUndo()
+    })
     this.redo = document.querySelector('#redo')!
+    this.redo.addEventListener('click', () => {
+      this.controls.handleRedo()
+    })
   }
 }
