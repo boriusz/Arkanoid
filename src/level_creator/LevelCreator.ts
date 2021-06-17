@@ -84,6 +84,7 @@ export default class LevelCreator {
 
   setData(elements: ResultInterface[]): void {
     this.data = elements
+    this.renderRepresentation()
   }
 
   getData(): ResultInterface[] {

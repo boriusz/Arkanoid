@@ -21,6 +21,7 @@ export class ContextMenu {
       toDelete.forEach(({ x, y }) => {
         this.creator.removeExisting(x, y)
       })
+      this.controls.pressedKeys.Delete = false
       this.creator.renderRepresentation()
     })
     this.saveToFile = document.querySelector('#save')!

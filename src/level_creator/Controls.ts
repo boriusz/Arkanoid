@@ -17,7 +17,7 @@ export interface ResultInterface {
 
 export class Controls {
   private readonly contextMenu: HTMLElement
-  private pressedKeys: {
+  pressedKeys: {
     Delete: boolean
     s: boolean
     l: boolean
@@ -74,7 +74,7 @@ export class Controls {
       result.push([])
     }
 
-    if (e.key === 's' && e.ctrlKey) {
+    if (e.key === 's' && (e.ctrlKey || e.metaKey)) {
       e.preventDefault()
       if (!this.pressedKeys.s) {
         this.pressedKeys.s = true
@@ -82,7 +82,7 @@ export class Controls {
       }
     }
 
-    if (e.key === 'l' && e.ctrlKey) {
+    if (e.key === 'l' && (e.ctrlKey || e.metaKey)) {
       e.preventDefault()
       if (!this.pressedKeys.l) {
         this.pressedKeys.l = true
@@ -113,13 +113,11 @@ export class Controls {
   }
 
   handleSave(): void {
-    console.log('saving to file')
     this.fileManager.saveToFile(this.creator.getData())
   }
 
-  handleRead(): void {
-    console.log('reading from file')
-    const data = this.fileManager.readFromFile()
+  async handleRead(): Promise<void> {
+    const data = await this.fileManager.readFromFile()
     this.creator.setData(data)
   }
 
