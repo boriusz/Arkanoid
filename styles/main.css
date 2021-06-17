@@ -49,3 +49,33 @@ block-element {
     position: fixed;
     /*z-index: 999;*/
 }
+
+#context-menu {
+    position: fixed;
+    z-index: 10000;
+    width: 200px;
+    background: #1b1a1a;
+    border-radius: 5px;
+    display: none;
+}
+
+#context-menu.visible {
+    display: block;
+}
+
+#context-menu .item {
+    padding: 8px 10px;
+    font-size: 15px;
+    color: #eee;
+    cursor: pointer;
+    border-radius: inherit;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+#context-menu .item:hover {
+    background: #343434;
+}
+

@@ -47,7 +47,7 @@ export class AreaSelector {
   }
 
   private handleMouseDown(e: MouseEvent): void {
-    if ((e.target as HTMLElement).className === 'bound') return
+    if (!(e.target instanceof BlockElement)) return
     this.startX = e.pageX
     this.startY = e.pageY
     this.selector.style.top = 0 + 'px'
